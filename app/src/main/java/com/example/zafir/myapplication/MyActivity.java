@@ -8,10 +8,10 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -21,17 +21,26 @@ import java.util.Date;
 
 public class MyActivity extends Activity {
 
-    private Button addBook;
-    private EditText bookName;
-    private EditText pageNumber;
+
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+
+        String[] listItems = new String[3];
+        listItems[0] = "Item 1";
+        listItems[1] = "Item 2";
+        listItems[2] = "Item 3";
+
+        ArrayAdapter<String> listItemAdapter = new CustomAdapter(this, android.R.layout.simple_list_item_1,listItems);
+        ListView lv = (ListView)this.findViewById(R.id.mainList);
+        lv.setAdapter(listItemAdapter);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -39,6 +48,8 @@ public class MyActivity extends Activity {
         getMenuInflater().inflate(R.menu.my, menu);
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
