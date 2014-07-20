@@ -1,25 +1,20 @@
 package com.example.zafir.myapplication;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-
-import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -56,12 +51,16 @@ public class BarcodeISBNConvertor extends AsyncTask<String, Integer, String> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
             StringBuilder string_builder = new StringBuilder();
             for (String line = null; (line = reader.readLine()) != null;) {
-                string_builder.append(line).append("\n");
+                //string_builder.append(line).append("\n");
+                string_builder.append(line);
             }
-            JSONTokener tokener = new JSONTokener(string_builder.toString());
-            JSONObject finalResult = new JSONObject(tokener);
-            this.json_result_string = finalResult.toString();
-            Log.i("successful", finalResult.toString(3));
+
+            result = string_builder.toString();
+
+//            JSONTokener tokener = new JSONTokener(string_builder.toString());
+//            JSONObject finalResult = new JSONObject(tokener);
+//            this.json_result_string = finalResult.toString();
+//            Log.i("successful", finalResult.toString(3));
 
         } catch (ClientProtocolException e) {
             Log.i("failed", Log.getStackTraceString(e));

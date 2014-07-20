@@ -31,6 +31,14 @@ public class ParseIsbnJson extends AsyncTask<String, Void, HashMap<String, Strin
 
                     Log.i("ParseIsbnJson.class", "thumbUrl_" + i + ": " + thumbUrl);
                 }
+
+                if(bookObject.has("info_url")) {
+                    String infoUrl = bookObject.getString("info_url");
+                    data.put("infoUrl_" + i, infoUrl);
+
+                    Log.i("ParseIsbnJson.class", "infoUrl_" + i + ": " + infoUrl);
+                }
+
                 i++;
             }
 

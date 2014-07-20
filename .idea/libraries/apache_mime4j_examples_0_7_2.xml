@@ -4,8 +4,6 @@
       <root url="jar://$PROJECT_DIR$/app/libs/apache-mime4j-examples-0.7.2.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$PROJECT_DIR$/app/libs/apache-mime4j-examples-0.7.2-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

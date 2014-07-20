@@ -29,6 +29,7 @@ public class ParseBarcodeJson extends AsyncTask<String, Void, HashMap<String, St
 
                 data.put("isbn_" + i, isbn);
                 data.put("barcode_type_" + i, barcodeType);
+                Log.i("barcodes hash", data.toString());
             }
 
         } catch (Exception e) {
