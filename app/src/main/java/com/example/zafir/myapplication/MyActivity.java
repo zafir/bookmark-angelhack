@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,9 +27,11 @@ public class MyActivity extends Activity {
 
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
-    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
     protected Uri fileUri;
     private static final String TAG = MyActivity.class.getSimpleName();
+    String mCurrentPhotoPath;
+    static final int REQUEST_TAKE_PHOTO = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,130 +73,55 @@ public class MyActivity extends Activity {
 
     //Button click to take photo of book, launches camera
     public void onClickAddBook(View view) {
-        //Inform the user the button has been clicked
-        Toast.makeText(this, "Add book clicked.", Toast.LENGTH_SHORT).show();
-        // give the image a name so we can store it in the phone's default location
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
 
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "IMG_" + timeStamp + ".jpg");
-
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        //fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image (this doesn't work at all for images)
-        fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values); // store content values
-        intent.putExtra( MediaStore.EXTRA_OUTPUT,  fileUri);
-
-        // start the image capture Intent
-        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
 
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-
-                // Originally I was going to iterate through the list of images and grab last added to the MediaStore.
-                // But this is not necessary if we store the Uri in the image
-                /*
-                String[] projection = {MediaStore.Images.ImageColumns._ID};
-                String sort = MediaStore.Images.ImageColumns._ID + " DESC";
-
-                Cursor cursor = this.managedQuery(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, projection, null, null, sort);
-
-                try{
-                    cursor.moveToFirst();
-                    Long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
-                    fileUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(id));
-                } finally{
-                    cursor.close();
-                }
-                */
-
-                if(fileUri != null) {
-                    Log.d(TAG, "Image saved to:\n" + fileUri);
-                    Log.d(TAG, "Image path:\n" + fileUri.getPath());
-                    Log.d(TAG, "Image name:\n" + getName(fileUri)); // use uri.getLastPathSegment() if store in folder
-                }
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // User cancelled the image capture
-            } else {
-                // Image capture failed, advise user
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
     }
 
-    /** Create a file Uri for saving an image or video to specific folder
-     * https://developer.android.com/guide/topics/media/camera.html#saving-media
-     * */
-    private static Uri getOutputMediaFileUri(int type)
-    {
-        return Uri.fromFile(getOutputMediaFile(type));
-    }
-
-    /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(int type)
-    {
-        // To be safe, you should check that the SDCard is mounted
-
-        if(Environment.getExternalStorageState() != null) {
-            // this works for Android 2.2 and above
-            File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "AndroidCameraTestsFolder");
-
-            // This location works best if you want the created images to be shared
-            // between applications and persist after your app has been uninstalled.
-
-            // Create the storage directory if it does not exist
-            if (! mediaStorageDir.exists()) {
-                if (! mediaStorageDir.mkdirs()) {
-                    Log.d(TAG, "failed to create directory");
-                    return null;
-                }
-            }
-
-            // Create a media file name
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            File mediaFile;
-            if (type == MEDIA_TYPE_IMAGE){
-                mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                        "IMG_"+ timeStamp + ".jpg");
-            } else if(type == MEDIA_TYPE_VIDEO) {
-                mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                        "VID_"+ timeStamp + ".mp4");
-            } else {
-                return null;
-            }
-
-            return mediaFile;
-        }
-
-        return null;
-    }
-
-    // grab the name of the media from the Uri
-    protected String getName(Uri uri)
-    {
-        String filename = null;
-
-        try {
-            String[] projection = { MediaStore.Images.Media.DISPLAY_NAME };
-            Cursor cursor = managedQuery(uri, projection, null, null, null);
-
-            if(cursor != null && cursor.moveToFirst()){
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
-                filename = cursor.getString(column_index);
-            } else {
-                filename = null;
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error getting file name: " + e.getMessage());
-        }
-
-        return filename;
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 }
