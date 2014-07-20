@@ -2,18 +2,25 @@ package com.example.zafir.myapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class MyActivity extends Activity {
+
+    private Button addBook;
+    private EditText bookName;
+    private EditText pageNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -32,5 +39,11 @@ public class MyActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void onClickAddBook(View view) {
+        //Inform the user the button has been clicked
+        Toast.makeText(this, "Add book clicked.", Toast.LENGTH_SHORT).show();
     }
 }
