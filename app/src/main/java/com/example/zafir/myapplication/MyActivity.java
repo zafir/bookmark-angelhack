@@ -12,6 +12,10 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+
+        BarcodeISBNConvertor b = new BarcodeISBNConvertor();
+        b.execute("/storage/emulated/0/DCIM/Camera/IMG_20140719_182103.jpg");
+
     }
 
 
