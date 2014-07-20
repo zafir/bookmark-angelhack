@@ -14,7 +14,7 @@ public class CustomAdapter extends ArrayAdapter<String> {
     private final Context context;
     private String[] values;
 
-    public CustomAdapter(Context context, int simple_list_item_1, String[] values) {
+    public CustomAdapter(Context context, String[] values) {
         super(context, R.layout.activity_my, values);
 
         this.context = context;

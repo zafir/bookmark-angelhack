@@ -36,7 +36,8 @@ public class MyActivity extends Activity {
         listItems[1] = "Item 2";
         listItems[2] = "Item 3";
 
-        ArrayAdapter<String> listItemAdapter = new CustomAdapter(this, android.R.layout.simple_list_item_1,listItems);
+        //ArrayAdapter<String> listItemAdapter = new CustomAdapter(this, android.R.layout.simple_list_item_1,listItems);
+        ArrayAdapter<String> listItemAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
         ListView lv = (ListView)this.findViewById(R.id.mainList);
         lv.setAdapter(listItemAdapter);
     }
