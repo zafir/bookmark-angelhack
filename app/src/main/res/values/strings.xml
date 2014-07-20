@@ -9,6 +9,7 @@
     <string name="item3">Item 3</string>
     <string name="item4">Item 4</string>
     <string name="item5">Item 5</string>
-
+    <string name="title_activity_add_bookmark">AddBookmarkActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
