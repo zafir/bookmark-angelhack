@@ -78,6 +78,12 @@ public class MyActivity extends Activity {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
 
+        /*
+        Intent addBookMarkIntent = new Intent(this, AddBookmarkActivity.class);
+        addBookMarkIntent.setData(fileUri);
+        startActivity(addBookMarkIntent);*/
+
+
     }
 
     private File createImageFile() throws IOException {
