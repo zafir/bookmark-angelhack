@@ -9,16 +9,25 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class MyActivity extends Activity {
@@ -29,12 +38,40 @@ public class MyActivity extends Activity {
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     protected Uri fileUri;
     private static final String TAG = MyActivity.class.getSimpleName();
+    List<Map<String, String>> booksList = new ArrayList<Map<String,String>>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
+        initList();
+
+        // We get the ListView component from the layout
+        ListView lv = (ListView) findViewById(R.id.mainList);
+
+        // This is a simple adapter that accepts as parameter
+        // Context
+        // Data list
+        // The row layout that is used during the row creation
+        // The keys used to retrieve the data
+        // The View id used to show the data. The key number and the view id must match
+        SimpleAdapter simpleAdpt = new SimpleAdapter(this, booksList, android.R.layout.simple_list_item_1, new String[]{"book"}, new int[]{android.R.id.text1});
+
+
+
+        lv.setAdapter(simpleAdpt);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parentAdapter, View view, int position, long id) {
+                //We know the view is a TextView so we can cast it
+                TextView clickedView = (TextView) view;
+
+                Toast.makeText(MyActivity.this, "Item with id ["+id+"] - Position ["+position+"] - Book ["+clickedView.getText()+"]", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /*
         String[] listItems = new String[3];
         listItems[0] = "Item 1";
         listItems[1] = "Item 2";
@@ -44,6 +81,29 @@ public class MyActivity extends Activity {
         ArrayAdapter<String> listItemAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
         ListView lv = (ListView)this.findViewById(R.id.mainList);
         lv.setAdapter(listItemAdapter);
+        */
+    }
+
+
+
+
+
+
+    private void initList() {
+
+        booksList.add(createBook ("book", "book1"));
+        booksList.add(createBook ("book", "book2"));
+        booksList.add(createBook ("book", "book3"));
+        booksList.add(createBook ("book", "book4"));
+        booksList.add(createBook ("book", "book5"));
+
+    }
+
+    private HashMap<String, String> createBook(String key, String name) {
+        HashMap<String, String> book = new HashMap<String, String>();
+        book.put (key, name);
+
+        return book;
     }
 
 
